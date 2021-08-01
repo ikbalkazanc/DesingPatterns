@@ -1,24 +1,22 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System;
 
 namespace Creational.Factory
 {
-    public class Program
+    class Program
     {
-        public static void Main(string[] args)
+        static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
-        }
+            var factory = new DatabaseFactory();
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureServices((hostContext, services) =>
-                {
-                    services.AddHostedService<Worker>();
-                });
+            var db = factory.CreateDatabase(QueryType.UserCredentials);
+            db.Connect();
+            var result = db.ExecuteQuery("SELECT * FROM [dbo].[User]");
+
+            db = factory.CreateDatabase(QueryType.Log);
+            db.Connect();
+            var result2 = db.ExecuteQuery("SELECT * FROM [dbo].[Log]");
+
+            Console.WriteLine("HALT");
+        }
     }
 }
